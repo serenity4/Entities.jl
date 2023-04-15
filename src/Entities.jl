@@ -1,5 +1,10 @@
 module Entities
 
-# Write your package code here.
+const EntityID = Int32
+
+include("pool.jl")
+include("data.jl")
+
+export EntityID, EntityPool, ComponentEntry
 
 end
