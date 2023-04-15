@@ -55,7 +55,7 @@ function Base.delete!(storage::ComponentStorage, entity::EntityID)
   index = get(storage.indices, entity, UInt32(0))
   # Don't do anything if the entity does not have a component.
   iszero(index) && return storage
-  delete!(storage.indices, entity)
+  storage.indices[entity] = 0
   n = lastindex(storage.components)
   if index == n
     pop!(storage.components)
