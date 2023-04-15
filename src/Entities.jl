@@ -5,6 +5,6 @@ const EntityID = Int32
 include("pool.jl")
 include("data.jl")
 
-export EntityID, EntityPool, ComponentEntry
+export EntityID, EntityPool, ComponentStorage
 
-end
+end # module
