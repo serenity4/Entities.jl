@@ -3,7 +3,7 @@ module Entities
 const EntityID = Int32
 
 include("pool.jl")
-include("data.jl")
+include("storage.jl")
 
 export EntityID, EntityPool, ComponentStorage
 

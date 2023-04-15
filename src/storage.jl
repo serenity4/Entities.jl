@@ -2,7 +2,15 @@
 Contiguous storage of components keyed by entity.
 
 Components may be used directly by systems without having to
-refer to individual entities.
+refer to individual entities, to avoid cache-unfriendly indirections caused by lookups.
+
+!!! note
+    Component sharing among multiple entities is not yet supported. When a component is inserted for
+    a new entity, and this component has been previously inserted for a different entity that is still
+    present, then the component will be stored at another memory location. Component sharing can be
+    achieved at the moment using a mutable component type, though performance will be severely degraded
+    as mutable components will not be stored inline in memory (it is the pointers to such components which
+    will be stored contiguously).
 """
 struct ComponentStorage{T}
   components::Vector{T}
