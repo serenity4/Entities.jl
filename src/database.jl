@@ -50,7 +50,7 @@ Base.IteratorEltype(::Type{<:ColumnIterator}) = Base.HasEltype()
 Base.eltype(::Type{ColumnIterator{T}}) where {T} = Tuple{eltype.(fieldtypes(T))...}
 Base.IteratorSize(::Type{<:ColumnIterator}) = Base.SizeUnknown()
 
-@forward_to_type ColumnIterator (Base.eltype, Base.IteratorEltype, Base.IteratorSize)
+@forward_methods ColumnIterator field = typeof(_) Base.eltype Base.IteratorEltype Base.IteratorSize
 
 function Base.iterate(it::ColumnIterator, state = 1)
   col, cols... = it.columns

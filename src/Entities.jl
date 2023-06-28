@@ -1,6 +1,6 @@
 module Entities
 
-using Forward
+using ForwardMethods
 const EntityID = Int32
 
 include("pool.jl")

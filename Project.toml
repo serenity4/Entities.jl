@@ -4,7 +4,7 @@ authors = ["Cédric BELMANT"]
 version = "0.0.1"
 
 [deps]
-Forward = "e6853b8d-fd15-4ade-99cd-709dcd354015"
+ForwardMethods = "5fe2550f-d27e-4649-9aea-fdf9a83a1aa9"
 
 [compat]
 julia = "1.8"

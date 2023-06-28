@@ -18,15 +18,15 @@ struct ComponentStorage{T}
   entities::Dict{UInt32, EntityID} # index -> entity
 end
 
-Base.length(storage::ComponentStorage) = length(storage.components)
+@forward_interface ComponentStorage{T} field = :components interface = [indexing, iteration] omit = [getindex]
+@forward_methods ComponentStorage field = :components Base.iterate(_, args...) Base.getindex(_, i::Integer)
+
 Base.eltype(::Type{ComponentStorage{T}}) where {T} = T
-@forward_to_type ComponentStorage Base.eltype
-Base.iterate(storage::ComponentStorage, args...) = iterate(storage.components, args...)
+@forward_methods ComponentStorage field = typeof(_) Base.eltype
 
 ComponentStorage{T}() where {T} = ComponentStorage(T[], Dict{EntityID, UInt32}(), Dict{UInt32, EntityID}())
 
 Base.getindex(storage::ComponentStorage, entity::EntityID) = storage[storage.indices[entity]]
-Base.getindex(storage::ComponentStorage, i::Integer) = storage.components[i]
 Base.haskey(storage::ComponentStorage, i::Integer) = in(i, eachindex(storage.components))
 Base.haskey(storage::ComponentStorage, entity::EntityID) = !iszero(get(storage.indices, entity, UInt32(0)))
 Base.get(storage::ComponentStorage, key, default) = haskey(storage, key) ? storage[key] : default
