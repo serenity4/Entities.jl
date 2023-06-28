@@ -8,6 +8,6 @@ include("storage.jl")
 include("components.jl")
 include("database.jl")
 
-export EntityID, EntityPool, ComponentStorage, ECSDatabase, add_column!, components
+export EntityID, EntityPool, ComponentID, ComponentStorage, ECSDatabase, add_column!, components
 
 end # module
