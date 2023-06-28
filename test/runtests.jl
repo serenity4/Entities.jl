@@ -1,5 +1,5 @@
 using Entities
-using Entities: new!
+using Entities: new!, component_iterator, ColumnIterator
 using Test
 
 @testset "Entities.jl" begin
@@ -43,4 +43,31 @@ using Test
     @test collect(storage) == storage.components
     @test length(storage) == 2
   end
-end
+
+  @testset "ECSDatabase" begin
+    pool = EntityPool()
+    ecs = ECSDatabase()
+    c1 = add_column!(ecs)
+    storage = ComponentStorage{Float64}()
+    ecs[c1] = storage
+    entity1 = new!(pool)
+    insert!(ecs, entity1, c1, 1.0)
+    @test ComponentStorage{Float64}(ecs, c1) === storage
+    @test component_iterator(ecs, c1, Float64) === storage
+    ret = components(ecs, c1, Float64)
+    @test ret == [1.0]
+    @test eltype(ret) === Float64
+    @test ecs[entity1, c1] === 1.0
+    entity2 = new!(pool)
+    c2 = add_column!(ecs)
+    insert!(ecs, entity2, c2, :a)
+    @test ecs[entity2, c2] === :a
+    ret = components(ecs, c2, Symbol)
+    @test ret == [:a]
+    @test eltype(ret) === Symbol
+    @test component_iterator(ecs, (c1, c2), Tuple{Float64, Symbol}) isa ColumnIterator{Tuple{ComponentStorage{Float64}, ComponentStorage{Symbol}}}
+    ret = components(ecs, (c1, c2), Tuple{Float64, Symbol})
+    @test ret == [(1.0, :a)]
+    @test eltype(ret) === Tuple{Float64, Symbol}
+  end
+end;
