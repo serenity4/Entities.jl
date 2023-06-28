@@ -18,7 +18,7 @@ struct ComponentStorage{T}
   entities::Dict{UInt32, EntityID} # index -> entity
 end
 
-@forward_interface ComponentStorage{T} field = :components interface = [indexing, iteration] omit = [getindex]
+@forward_interface ComponentStorage{T} field = :components interface = [indexing, iteration] omit = [getindex, eltype]
 @forward_methods ComponentStorage field = :components Base.iterate(_, args...) Base.getindex(_, i::Integer)
 
 Base.eltype(::Type{ComponentStorage{T}}) where {T} = T
