@@ -1,13 +1,13 @@
-mutable struct EntityPool # not thread-safe
-  counter::EntityID
-  const free::Vector{EntityID}
+struct EntityPool # not thread-safe
+  counter::Counter
+  free::Vector{EntityID}
 end
 
-EntityPool() = EntityPool(EntityID(0), EntityID[])
+EntityPool() = EntityPool(Counter(), EntityID[])
 
 function new!(pool::EntityPool)
   !isempty(pool.free) && return pop!(pool.free)
-  pool.counter += EntityID(1)
+  next_entity!(pool.counter)
 end
 
 function Base.delete!(pool::EntityPool, id::EntityID)
@@ -17,6 +17,6 @@ end
 
 function Base.empty!(pool::EntityPool)
   empty!(pool.free)
-  pool.counter = 0
+  reset!(pool.counter)
   pool
 end

@@ -6,16 +6,16 @@ using Test
   @testset "Entity pool" begin
     pool = EntityPool()
     entity1 = new!(pool)
-    @test pool.counter == entity1
+    @test EntityID(pool.counter[]) == entity1
     entity2 = new!(pool)
-    @test pool.counter == entity2
+    @test EntityID(pool.counter[]) == entity2
     delete!(pool, entity1)
     @test pool.free == [entity1]
     entity3 = new!(pool)
     @test entity3 == entity1
-    @test pool.counter == entity2
+    @test EntityID(pool.counter[]) == entity2
     @test isempty(pool.free)
-    @test new!(pool) == pool.counter == EntityID(3)
+    @test new!(pool) == EntityID(pool.counter[]) == EntityID(3)
   end
 
   @testset "Per-entity contiguous component storage" begin
