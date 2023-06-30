@@ -62,12 +62,13 @@ using Test
     c2 = add_column!(ecs)
     insert!(ecs, entity2, c2, :a)
     @test ecs[entity2, c2] === :a
+    ecs[entity2, c2] = :b
     ret = components(ecs, c2, Symbol)
-    @test ret == [:a]
+    @test ret == [:b]
     @test eltype(ret) === Symbol
     @test component_iterator(ecs, (c1, c2), Tuple{Float64, Symbol}) isa ColumnIterator{Tuple{ComponentStorage{Float64}, ComponentStorage{Symbol}}}
     ret = components(ecs, (c1, c2), Tuple{Float64, Symbol})
-    @test ret == [(1.0, :a)]
+    @test ret == [(1.0, :b)]
     @test eltype(ret) === Tuple{Float64, Symbol}
   end
 end;

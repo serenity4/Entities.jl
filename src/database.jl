@@ -10,6 +10,7 @@ add_column!(ecs::ECSDatabase) = next_component!(ecs.counter)
 Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get!(() -> ComponentStorage{typeof(item)}(), ecs.components, component), entity, item)
 Base.delete!(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = delete!(ecs.components[component], entity)
 Base.getindex(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = getindex(ecs.components[component], entity)
+Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID) = ecs.components[component][entity] = value
 Base.haskey(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = haskey(ecs.components[component], entity)
 
 for f in ()
