@@ -58,7 +58,7 @@ function Base.iterate(it::ColumnIterator, state = 1)
   for i in state:length(col)
     entity = col.entities[UInt32(i)]
     vals = ntuple(length(cols)) do j
-      get(cols[i], j, nothing)
+      get(cols[j], entity, nothing)
     end
     any(isnothing, vals) && continue
     return ((col[i], vals...)::Tuple{eltype.(it.columns)...}, i + 1)

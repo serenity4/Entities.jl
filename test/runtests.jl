@@ -68,7 +68,15 @@ using Test
     @test eltype(ret) === Symbol
     @test component_iterator(ecs, (c1, c2), Tuple{Float64, Symbol}) isa ColumnIterator{Tuple{ComponentStorage{Float64}, ComponentStorage{Symbol}}}
     ret = components(ecs, (c1, c2), Tuple{Float64, Symbol})
-    @test ret == [(1.0, :b)]
+    @test isempty(ret)
+    ecs[entity2, c1] = 2.0
+    ret = components(ecs, (c1, c2), Tuple{Float64, Symbol})
+    @test ret == [(2.0, :b)]
     @test eltype(ret) === Tuple{Float64, Symbol}
+    c3 = add_column!(ecs)
+    insert!(ecs, entity2, c3, "ha")
+    @test ecs[entity2, c3] === "ha"
+    ret = components(ecs, (c1, c2, c3), Tuple{Float64, Symbol, String})
+    @test ret == ret == [(2.0, :b, "ha")]
   end
 end;
