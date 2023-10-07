@@ -6,17 +6,21 @@ end
 ECSDatabase() = ECSDatabase(Dict(), Counter())
 
 add_column!(ecs::ECSDatabase) = next_component!(ecs.counter)
+get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(() -> ComponentStorage{T}(), ecs.components, component)
 
-Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get!(() -> ComponentStorage{typeof(item)}(), ecs.components, component), entity, item)
+Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get_column!(ecs, component, typeof(item)), entity, item)
 Base.delete!(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = delete!(ecs.components[component], entity)
 Base.getindex(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = getindex(ecs.components[component], entity)
-Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID) = ecs.components[component][entity] = value
+Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID) = get_column!(ecs, component, typeof(value))[entity] = value
 Base.haskey(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = haskey(ecs.components[component], entity)
 
-for f in ()
-  @eval $f(ecs::ECSDatabase, entity::EntityID, component::ComponentID, args...) = $f(ecs.components[component], entity, args...)
-end
 Base.setindex!(ecs::ECSDatabase, storage::ComponentStorage, col::ComponentID) = setindex!(ecs.components, storage, col)
+
+function Base.empty!(ecs::ECSDatabase)
+  empty!(ecs.components)
+  reset!(ecs.counter)
+  ecs
+end
 
 function ComponentStorage{T}(ecs::ECSDatabase, id::ComponentID) where {T}
   haskey(ecs.components, id) || throw(KeyError(id))
