@@ -22,6 +22,12 @@ function Base.empty!(ecs::ECSDatabase)
   ecs
 end
 
+function Base.delete!(ecs::ECSDatabase, entity::EntityID)
+  for storage in values(ecs.components)
+    haskey(storage, entity) && delete!(storage, entity)
+  end
+end
+
 function ComponentStorage{T}(ecs::ECSDatabase, id::ComponentID) where {T}
   haskey(ecs.components, id) || throw(KeyError(id))
   storage = ecs.components[id]

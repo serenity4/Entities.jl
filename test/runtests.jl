@@ -78,6 +78,9 @@ using Test
     @test ecs[entity2, c3] === "ha"
     ret = components(ecs, (c1, c2, c3), Tuple{Float64, Symbol, String})
     @test ret == ret == [(2.0, :b, "ha")]
+    delete!(ecs, entity2)
+    @test_throws KeyError ecs[entity2, c3]
+    @test ecs[entity1, c1] === 1.0
 
     empty!(ecs)
     ecs[entity1, c1] = 3.0

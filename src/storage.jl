@@ -26,7 +26,11 @@ Base.eltype(::Type{ComponentStorage{T}}) where {T} = T
 
 ComponentStorage{T}() where {T} = ComponentStorage(T[], Dict{EntityID, UInt32}(), Dict{UInt32, EntityID}())
 
-Base.getindex(storage::ComponentStorage, entity::EntityID) = storage[storage.indices[entity]]
+function Base.getindex(storage::ComponentStorage, entity::EntityID)
+  i = storage.indices[entity]
+  iszero(i) && throw(KeyError(entity))
+  storage[i]
+end
 Base.haskey(storage::ComponentStorage, i::Integer) = in(i, eachindex(storage.components))
 Base.haskey(storage::ComponentStorage, entity::EntityID) = !iszero(get(storage.indices, entity, UInt32(0)))
 Base.get(storage::ComponentStorage, key, default) = haskey(storage, key) ? storage[key] : default
