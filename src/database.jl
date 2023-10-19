@@ -5,6 +5,8 @@ end
 
 ECSDatabase() = ECSDatabase(Dict(), Counter())
 
+Base.broadcastable(ecs::ECSDatabase) = Ref(ecs)
+
 add_column!(ecs::ECSDatabase) = next_component!(ecs.counter)
 get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(() -> ComponentStorage{T}(), ecs.components, component)
 
