@@ -71,6 +71,7 @@ function Base.delete!(storage::ComponentStorage, entity::EntityID)
     # Swap `index` and `n`, then delete `n`.
     storage.components[index] = pop!(storage.components)
     storage.entities[index] = storage.entities[n]
+    storage.indices[storage.entities[n]] = index
   end
   haskey(storage.entities, n) && delete!(storage.entities, n)
   storage

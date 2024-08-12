@@ -42,6 +42,9 @@ using Test
     @test storage.components == [3.0, 2.0]
     @test collect(storage) == storage.components
     @test length(storage) == 2
+    delete!(storage, entity3)
+    @test length(storage) == 1
+    @test storage.components == [2.0]
   end
 
   @testset "ECSDatabase" begin

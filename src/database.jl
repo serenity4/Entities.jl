@@ -11,7 +11,9 @@ add_column!(ecs::ECSDatabase) = next_component!(ecs.counter)
 get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(() -> ComponentStorage{T}(), ecs.components, component)
 
 Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get_column!(ecs, component, typeof(item)), entity, item)
+Base.insert!(ecs::ECSDatabase, entity, component::ComponentID, item) = insert!(ecs, convert(EntityID, entity), component, item)
 Base.delete!(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = delete!(ecs.components[component], entity)
+Base.delete!(ecs::ECSDatabase, entity, component::ComponentID) = delete!(ecs, convert(EntityID, entity), component)
 Base.getindex(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = getindex(ecs.components[component], entity)
 Base.getindex(ecs::ECSDatabase, entity, component::ComponentID) = getindex(ecs, convert(EntityID, entity)::EntityID, component)
 Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID) = get_column!(ecs, component, typeof(value))[entity] = value
