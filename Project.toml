@@ -1,7 +1,7 @@
 name = "Entities"
 uuid = "1768915e-f209-48c3-8e70-04c8c5555943"
 authors = ["Cédric BELMANT"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 ForwardMethods = "5fe2550f-d27e-4649-9aea-fdf9a83a1aa9"
