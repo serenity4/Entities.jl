@@ -1,12 +1,14 @@
 struct EntityPool # not thread-safe
   counter::Counter
   free::Vector{EntityID}
+  limit::UInt32
 end
 
-EntityPool() = EntityPool(Counter(), EntityID[])
+EntityPool(; limit = typemax(UInt32)) = EntityPool(Counter(), EntityID[], limit)
 
 function new!(pool::EntityPool)
   !isempty(pool.free) && return pop!(pool.free)
+  pool.counter[] < pool.limit || error("Pool limit reached")
   next_entity!(pool.counter)
 end
 

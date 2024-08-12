@@ -9,7 +9,7 @@ ComponentID(id::UInt32) = reinterpret(ComponentID, id)
 ComponentID(id::Integer) = ComponentID(convert(UInt32, id))
 
 mutable struct Counter
-  val::Int
+  val::UInt64
 end
 Counter() = Counter(0)
 next!(counter::Counter) = (counter.val += 1)
