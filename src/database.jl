@@ -1,9 +1,11 @@
 struct ECSDatabase
   components::Dict{ComponentID,ComponentStorage}
   counter::Counter
+  component_names::Union{Nothing, Dict{ComponentID, Symbol}}
+  entity_names::Union{Nothing, Dict{EntityID, Symbol}}
 end
 
-ECSDatabase() = ECSDatabase(Dict(), Counter())
+ECSDatabase(; component_names = nothing, entity_names = nothing) = ECSDatabase(Dict(), Counter(), component_names, entity_names)
 
 Base.broadcastable(ecs::ECSDatabase) = Ref(ecs)
 

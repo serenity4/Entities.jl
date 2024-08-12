@@ -1,12 +1,19 @@
 name = "Entities"
 uuid = "1768915e-f209-48c3-8e70-04c8c5555943"
-authors = ["Cédric BELMANT"]
 version = "0.1.5"
+authors = ["Cédric BELMANT"]
 
 [deps]
 ForwardMethods = "5fe2550f-d27e-4649-9aea-fdf9a83a1aa9"
 
+[weakdeps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+
+[extensions]
+EntitiesDataFramesExt = "DataFrames"
+
 [compat]
+DataFrames = "1.6.1"
 ForwardMethods = "1"
 julia = "1.8"
 
