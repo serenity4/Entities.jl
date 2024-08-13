@@ -21,7 +21,7 @@ function DataFrame(ecs::ECSDatabase)
     T = eltype(ecs.components[component_id])
     push!(df_columns, name => Union{T, Missing}[get(data, entity, missing) for entity in entities])
   end
-  !isnothing(ecs.entity_names) && !isempty(ecs.entity_names) && pushfirst!(df_columns, :Name => Union{Symbol, Missing}[get(ecs.entity_names, entity, missing) for entity in entities])
+  !isnothing(ecs.entity_names) && pushfirst!(df_columns, :Name => Union{Symbol, Missing}[get(ecs.entity_names, entity, missing) for entity in entities])
   perm = sortperm(entities, by = x -> reinterpret(UInt32, x))
   DataFrame([name => data[perm] for (name, data) in df_columns])
 end
