@@ -1,15 +1,30 @@
 struct ECSDatabase
   components::Dict{ComponentID,ComponentStorage}
-  counter::Counter
   component_names::Union{Nothing, Dict{ComponentID, Symbol}}
   entity_names::Union{Nothing, Dict{EntityID, Symbol}}
 end
 
-ECSDatabase(; component_names = nothing, entity_names = nothing) = ECSDatabase(Dict(), Counter(), component_names, entity_names)
+ECSDatabase(; component_names = nothing, entity_names = nothing) = ECSDatabase(Dict(), component_names, entity_names)
 
 Base.broadcastable(ecs::ECSDatabase) = Ref(ecs)
 
-add_column!(ecs::ECSDatabase) = next_component!(ecs.counter)
+function Base.show(io::IO, ecs::ECSDatabase)
+  n = length(ecs.components)
+  print(io, ECSDatabase, '(', n, " component type", n == 1 ? "" : "s", ')')
+end
+
+function Base.show(io::IO, ::MIME"text/plain", ecs::ECSDatabase)
+  n = length(ecs.components)
+  iszero(n) && return print(io, ECSDatabase, " (empty)")
+  unique_entities = unique(foldl((x, (id, storage)) -> append!(x, values(storage.entities)), ecs.components; init = EntityID[]))
+  print(io, ECSDatabase, " with ", length(unique_entities), " total entities and ", length(ecs.components), " component types:")
+  for (component, storage) in sort(pairs(ecs.components), by = x -> reinterpret(UInt32, x))
+    name = isnothing(ecs.component_names) ? nothing : get(ecs.component_names, component, nothing)
+    nc = length(storage)
+    print(io, "\n⬤ ", component, ' ', isnothing(name) ? '(' : "(name: $name, ", "type: ", eltype(storage), ", ", nc, " component", nc ≤ 1 ? ")" : "s)")
+  end
+end
+
 get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(() -> ComponentStorage{T}(), ecs.components, component)
 
 Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get_column!(ecs, component, typeof(item)), entity, item)
@@ -27,7 +42,6 @@ Base.setindex!(ecs::ECSDatabase, storage::ComponentStorage, col::ComponentID) = 
 
 function Base.empty!(ecs::ECSDatabase)
   empty!(ecs.components)
-  reset!(ecs.counter)
   ecs
 end
 

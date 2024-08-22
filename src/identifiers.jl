@@ -16,5 +16,4 @@ next!(counter::Counter) = (counter.val += 1)
 reset!(counter::Counter) = (counter.val = 0)
 Base.getindex(counter::Counter) = counter.val
 
-next_component!(counter::Counter) = ComponentID(next!(counter))
 next_entity!(counter::Counter) = EntityID(next!(counter))

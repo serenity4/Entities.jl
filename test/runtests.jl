@@ -49,8 +49,9 @@ using Test
 
   @testset "ECSDatabase" begin
     pool = EntityPool()
-    ecs = ECSDatabase()
-    c1 = add_column!(ecs)
+    ecs = ECSDatabase(component_names = Dict())
+    c1 = ComponentID(1)
+    ecs.component_names[c1] = :floating_point_value
     storage = ComponentStorage{Float64}()
     ecs[c1] = storage
     entity1 = new!(pool)
@@ -62,7 +63,7 @@ using Test
     @test eltype(ret) === Float64
     @test ecs[entity1, c1] === 1.0
     entity2 = new!(pool)
-    c2 = add_column!(ecs)
+    c2 = ComponentID(2)
     insert!(ecs, entity2, c2, :a)
     @test ecs[entity2, c2] === :a
     ecs[entity2, c2] = :b
@@ -76,7 +77,7 @@ using Test
     ret = components(ecs, (c1, c2), Tuple{Float64, Symbol})
     @test ret == [(2.0, :b)]
     @test eltype(ret) === Tuple{Float64, Symbol}
-    c3 = add_column!(ecs)
+    c3 = ComponentID(3)
     insert!(ecs, entity2, c3, "ha")
     @test ecs[entity2, c3] === "ha"
     ret = components(ecs, (c1, c2, c3), Tuple{Float64, Symbol, String})
@@ -84,6 +85,8 @@ using Test
     delete!(ecs, entity2)
     @test_throws KeyError ecs[entity2, c3]
     @test ecs[entity1, c1] === 1.0
+    @test isa(sprint(show, ecs), String)
+    @test isa(sprint(show, MIME"text/plain"(), ecs), String)
 
     empty!(ecs)
     ecs[entity1, c1] = 3.0
