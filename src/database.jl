@@ -25,18 +25,25 @@ function Base.show(io::IO, ::MIME"text/plain", ecs::ECSDatabase)
   end
 end
 
-get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(() -> ComponentStorage{T}(), ecs.components, component)
+get_column!(ecs::ECSDatabase, component::ComponentID, ::Type{T}) where {T} = get!(ComponentStorage{T}, ecs.components, component)::ComponentStorage{T}
 
-Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item) = insert!(get_column!(ecs, component, typeof(item)), entity, item)
-Base.insert!(ecs::ECSDatabase, entity, component::ComponentID, item) = insert!(ecs, convert(EntityID, entity), component, item)
+Base.insert!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, item, ::Type{T} = typeof(item)) where {T} = insert!(get_column!(ecs, component, T), entity, item)
+Base.insert!(ecs::ECSDatabase, entity, component::ComponentID, item, ::Type{T} = typeof(item)) where {T} = insert!(ecs, convert(EntityID, entity), component, item, T)
 Base.delete!(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = delete!(ecs.components[component], entity)
 Base.delete!(ecs::ECSDatabase, entity, component::ComponentID) = delete!(ecs, convert(EntityID, entity), component)
+Base.delete!(ecs::ECSDatabase, entity::EntityID, component::ComponentID, ::Type{T}) where {T} = delete!(ecs.components[component]::ComponentStorage{T}, entity)
+Base.delete!(ecs::ECSDatabase, entity, component::ComponentID, ::Type{T}) where {T} = delete!(ecs, convert(EntityID, entity), component, T)
 Base.getindex(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = getindex(ecs.components[component], entity)
 Base.getindex(ecs::ECSDatabase, entity, component::ComponentID) = getindex(ecs, convert(EntityID, entity)::EntityID, component)
-Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID) = get_column!(ecs, component, typeof(value))[entity] = value
-Base.setindex!(ecs::ECSDatabase, value, entity, component::ComponentID) = setindex!(ecs, value, convert(EntityID, entity)::EntityID, component)
+Base.getindex(ecs::ECSDatabase, entity::EntityID, component::ComponentID, ::Type{T}) where {T} = getindex(ecs.components[component]::ComponentStorage{T}, entity)
+Base.getindex(ecs::ECSDatabase, entity, component::ComponentID, ::Type{T}) where {T} = getindex(ecs, convert(EntityID, entity)::EntityID, component, T)
+
+Base.setindex!(ecs::ECSDatabase, value, entity::EntityID, component::ComponentID, ::Type{T} = typeof(value)) where {T} = get_column!(ecs, component, T)[entity] = value
+Base.setindex!(ecs::ECSDatabase, value, entity, component::ComponentID, ::Type{T} = typeof(value)) where {T} = setindex!(ecs, value, convert(EntityID, entity)::EntityID, component, T)
 Base.haskey(ecs::ECSDatabase, entity::EntityID, component::ComponentID) = haskey(ecs.components[component], entity)
 Base.haskey(ecs::ECSDatabase, entity, component::ComponentID) = haskey(ecs.components[component], convert(EntityID, entity)::EntityID)
+Base.haskey(ecs::ECSDatabase, entity::EntityID, component::ComponentID, ::Type{T}) where {T} = haskey(ecs.components[component]::ComponentStorage{T}, entity)
+Base.haskey(ecs::ECSDatabase, entity, component::ComponentID, ::Type{T}) where {T} = haskey(ecs, convert(EntityID, entity)::EntityID, component, T)
 
 Base.setindex!(ecs::ECSDatabase, storage::ComponentStorage, col::ComponentID) = setindex!(ecs.components, storage, col)
 

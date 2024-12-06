@@ -56,12 +56,42 @@ using Test
     ecs[c1] = storage
     entity1 = new!(pool)
     insert!(ecs, entity1, c1, 1.0)
+
+    # `haskey`
+    @test haskey(ecs, entity1, c1)
+    @test haskey(ecs, entity1, c1, Float64)
+    @test_throws TypeError haskey(ecs, entity1, c1, Int64)
+
+    # `getindex`
+    @test ecs[entity1, c1] === 1.0
+    @test ecs[entity1, c1, Float64] === 1.0
+    @test_throws TypeError ecs[entity1, c1, Int64]
+
+    # `setindex!`
+    ecs[entity1, c1] = 2.0
+    @test ecs[entity1, c1] === 2.0
+    ecs[entity1, c1, Float64] = 3
+    @test ecs[entity1, c1] === 3.0
+    @test_throws TypeError ecs[entity1, c1] = 1
+    ecs[entity1, c1] = 1.0
+    @test ecs[entity1, c1] === 1.0
+
+    # `insert!`/`delete!`
+    delete!(ecs, entity1, c1)
+    @test !haskey(ecs, entity1, c1)
+    insert!(ecs, entity1, c1, 1.0, Float64)
+    @test haskey(ecs, entity1, c1)
+    delete!(ecs, entity1, c1, Float64)
+    @test !haskey(ecs, entity1, c1)
+    insert!(ecs, entity1, c1, 1.0, Float64)
+    @test haskey(ecs, entity1, c1)
+
     @test ComponentStorage{Float64}(ecs, c1) === storage
     @test component_iterator(ecs, c1, Float64) === storage
     ret = components(ecs, c1, Float64)
     @test ret == [1.0]
     @test eltype(ret) === Float64
-    @test ecs[entity1, c1] === 1.0
+
     entity2 = new!(pool)
     c2 = ComponentID(2)
     insert!(ecs, entity2, c2, :a)
