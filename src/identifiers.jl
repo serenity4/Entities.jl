@@ -3,10 +3,14 @@ primitive type EntityID 32 end
 EntityID(id::UInt32) = reinterpret(EntityID, id)
 EntityID(id::Integer) = EntityID(convert(UInt32, id))
 
+Base.broadcastable(id::EntityID) = Ref(id)
+
 primitive type ComponentID 32 end
 
 ComponentID(id::UInt32) = reinterpret(ComponentID, id)
 ComponentID(id::Integer) = ComponentID(convert(UInt32, id))
+
+Base.broadcastable(id::ComponentID) = Ref(id)
 
 mutable struct Counter
   val::UInt64
