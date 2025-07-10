@@ -108,3 +108,9 @@ end
 components(ecs::ECSDatabase, ids, T) = components(component_iterator(ecs, ids, T))
 components(storage::ComponentStorage) = storage.components
 components(it::ColumnIterator) = collect(it)
+
+remap_type_for_dataframe_display(@nospecialize(T)) = Union{T, Missing}
+remap_type_for_dataframe_display(::Type{EntityID}) = Int64
+
+remap_value_for_dataframe_display(@nospecialize(x)) = x
+remap_value_for_dataframe_display(entity::EntityID) = Int64(entity)
